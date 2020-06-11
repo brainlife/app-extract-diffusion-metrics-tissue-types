@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l nodes=1:ppn=4,vmem=14gb,walltime=00:30:00
+#PBS -l nodes=1:ppn=4,vmem=14gb,walltime=00:15:00
 #PBS -N app-extract-diffusion-by-tissue
 #PBS -V
 

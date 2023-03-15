@@ -46,7 +46,7 @@ do
 done
 
 # final check
-if [ -f ${meas}.nii.gz ]; then
+if [ -f fa.nii.gz ]; then
 	echo "complete"
 else
 	echo "something went wrong. check logs and derivatives"

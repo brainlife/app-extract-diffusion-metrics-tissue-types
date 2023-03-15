@@ -33,6 +33,9 @@ myelin=`jq -r '.myelin' config.json` #myelin
 # measures to loop through
 measures="ad fa md rd ga mk ak rk ndi odi isovf t1 r1 m0 pd mtv vip sir wf myelin"
 
+# export subjects dir for freesurfer
+export SUBJECTS_DIR=./
+
 # reslice measures to space of mask
 for meas in $measures
 do

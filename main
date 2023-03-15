@@ -1,14 +1,22 @@
 #!/bin/bash
-#PBS -l nodes=1:ppn=4,vmem=14gb,walltime=00:15:00
+#PBS -l nodes=1:ppn=1,vmem=20gb,walltime=00:30:00
 #PBS -N app-extract-diffusion-by-tissue
 #PBS -V
-
-mask=`jq -r '.mask' config.json`
-fa=`jq -r '.fa' config.json`
 
 [ -z "$FREESURFER_LICENSE" ] && echo "Please set FREESURFER_LICENSE in .bashrc" && exit 1;
 echo $FREESURFER_LICENSE > license.txt
 
-[ ! -f 5tt.nii.gz ] && time singularity exec -e -B `pwd`/license.txt:/usr/local/freesurfer/license.txt docker://brainlife/freesurfer-mini:6.0.1 bash -c "export SUBJECTS_DIR=./ && mri_vol2vol --mov ${mask} --targ ${fa} --interp nearest --regheader --o 5tt.nii.gz"
+[ ! -f 5tt.nii.gz ] && time singularity exec -e docker://brainlife/mrtrix3:3.0.0 ./convert.sh
 
-[ ! -f ./output/fa_csf.nii.gz ] && time singularity exec -e docker://brainlife/mrtrix3:3.0.0 ./convert-multiply.sh
+time singularity exec -e -B `pwd`/license.txt:/usr/local/freesurfer/license.txt docker:/brainlife/freesurfer:7.3.1 ./move.sh
+
+[ ! -f parc_stats/parc_stats/tissue.csv ] && time singularity exec -e docker://brainlife/dipy:1.4.1 ./build_dataframe.py
+
+if [ ! -f parc-stats/parc-stats/tissues.csv ]; then
+	echo "something went wrong. check logs and derivatives"
+	exit 1
+else
+	echo "complete"
+	mkdir -p raw
+	mv *.nii.gz ./raw/
+fi

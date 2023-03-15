@@ -58,42 +58,14 @@ def main():
 	csf = nib.load('csf.nii.gz')
 	csf = csf.get_fdata()
 
-	df_measures = []
+	# identify measures
+	df_measures = glob.glob('*.nii.gz')
+	measure_path = [ f for f in df_measures if f not in ['gm.nii.gz','5tt.nii.gz','wm.nii.gz','csf.nii.gz'] ]
 	
-	# dti
-	fa = config['fa']
-	if os.path.isfile(fa):
-		df_measures = df_measures+['ad','fa','md','rd']
-
-	# dki
-	ga = config['ga']
-	if os.path.isfile(ga):
-		df_measures = df_measures+['ga','ak','mk','rk']
-
-	# noddi
-	if 'odi' in config:
-		odi = config['odi']
-		if os.path.isfile(odi):
-			df_measures = df_measures+['ndi','odi','isovf']
-		
-	# myelin-map
-	if 'myelin' in config:
-		myelin = config['myelin']
-		if os.path.isfile(myelin):
-			df_measures = df_measures+['myelin']
-		
-	# qmri
-	if 'T1' in config:
-		qmri = ["T1","R1","M0","PD","MTV","VIP","SIR","WF"]
-		for i in qmri:
-			test_met = config[i]
-			if os.path.isfile(test_met):
-				df_measures = df_measures+[i]
-	
-	measure_path = [ config[f] for f in df_measures ]
-
+	# build initital dataframe
 	df = build_dataframe()
 
+	# loop through measures in measure_path; load data, extract summary measures, then update dataframe
 	for meas in measure_path:
 		measure_name = meas
 		data = nib.load(meas)
@@ -102,14 +74,15 @@ def main():
 		results = extract_summary_measures(gm,wm,csf,data)
 		df = update_dataframe(df,results,measure_name,subjectID)
 
+	# build output directories
 	if not os.isdir('parc-stats'):
 		os.mkdir('parc-stats')
 
 	if not os.isdir('parc-stats/parc-stats'):
 		os.mkdir('parc-stats/parc-stats')
 
+	# save dataframe
 	df.to_csv('parc-stats/parc-stats/tissues.csv',index=False)
-
 
 if __name__ == '__main__':
 	main()

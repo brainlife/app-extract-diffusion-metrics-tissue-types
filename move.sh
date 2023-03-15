@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# tissue type mask
-mask=`jq -r '.mask' config.json`
-
 # tensor
 ad=`jq -r '.ad' config.json` #ad
 fa=`jq -r '.fa' config.json` #fa
@@ -36,8 +33,21 @@ myelin=`jq -r '.myelin' config.json` #myelin
 # measures to loop through
 measures="ad fa md rd ga mk ak rk ndi odi isovf t1 r1 m0 pd mtv vip sir wf myelin"
 
+# reslice measures to space of mask
 for meas in $measures
 do
 	measure=$(eval "echo \${meas}")
 	if [ -f ${measure} ]; then
-		mri_vol2vol --mov ${measure} --targ 
+		mri_vol2vol --mov ${measure} --targ 5tt.nii.gz --regheader --interp nearest --o ${meas}.nii.gz
+	fi
+done
+
+# final check
+if [ -f ${meas}.nii.gz ]; then
+	echo "complete"
+else
+	echo "something went wrong. check logs and derivatives"
+	exit 1
+fi
+
+

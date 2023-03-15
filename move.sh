@@ -36,7 +36,7 @@ measures="ad fa md rd ga mk ak rk ndi odi isovf t1 r1 m0 pd mtv vip sir wf myeli
 # reslice measures to space of mask
 for meas in $measures
 do
-	measure=$(eval "echo \${meas}")
+	measure=$(eval "echo \$${meas}")
 	if [ -f ${measure} ]; then
 		mri_vol2vol --mov ${measure} --targ 5tt.nii.gz --regheader --interp nearest --o ${meas}.nii.gz
 	fi

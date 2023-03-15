@@ -83,10 +83,10 @@ def main():
 		df = update_dataframe(df,mean,sd,measure_name,subjectID)
 
 	# build output directories
-	if not os.isdir('parc-stats'):
+	if not os.path.isdir('parc-stats'):
 		os.mkdir('parc-stats')
 
-	if not os.isdir('parc-stats/parc-stats'):
+	if not os.path.isdir('parc-stats/parc-stats'):
 		os.mkdir('parc-stats/parc-stats')
 
 	# save dataframe

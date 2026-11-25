@@ -3,6 +3,36 @@
 
 # Extract diffusion metrics inside tissue types
 
+<!-- brainlife-app:begin (generated from the App manifest; edit the manifest, not this block) -->
+
+**Computes the mean and standard deviation of diffusion (DTI, DKI, NODDI), quantitative MRI and myelin maps within gray matter, white matter, CSF and the whole brain defined by a 5-tissue-type mask, and outputs a CSV.**
+
+Splits the 5-tissue-type image with MRtrix3 into gray matter, white matter and CSF maps binarised at 0.5, reslices each provided measure map to that grid with FreeSurfer mri_vol2vol (header-based, nearest neighbour), and writes per-tissue mean and SD of every measure to tissues.csv. Use it for a quick tissue-level summary of microstructure measures. Needs a 5-tissue-type mask and at least one of the tensor, NODDI, qMRI or myelin inputs, aligned to it. Note: in this branch the CSF mask is binarised from the gray matter map (convert.sh), so CSF values are not reliable.
+
+Run it on brainlife.io: [https://doi.org/10.25663/brainlife.app.746](https://doi.org/10.25663/brainlife.app.746)
+
+| Input | Datatype | Required | Description |
+|---|---|---|---|
+| `mask` | `neuro/mask` (5tt_masks) | yes | 5-tissue-type segmentation (MRtrix3 5tt format) defining gray matter, white matter and CSF. |
+| `tensor` | `neuro/tensor` | yes | Optional tensor/kurtosis maps (fa, md, rd, ad, ga, ak, mk, rk). |
+| `noddi` | `neuro/noddi` | no | Optional NODDI maps (ndi, isovf, odi). |
+| `qt1` | `neuro/anat/qmri` | no | Optional quantitative MRI maps (t1, r1, m0, pd, mtv, vip, sir, wf). |
+| `myelin` | `neuro/myelin-map` | no | Optional myelin map. |
+
+| Output | Datatype | Description |
+|---|---|---|
+| `parc-stats` | `neuro/parc-stats` | tissues.csv with mean and SD of each measure in gray_matter, white_matter, csf and wholebrain. |
+| `raw` | `raw` | Intermediate tissue masks and resliced measure maps. |
+
+Runtime: container `brainlife/mrtrix3:3.0.0`; 1 CPUs; 20 GB memory; 0.5 h walltime; needs `FREESURFER_LICENSE`.
+
+Please cite:
+- Avesani P. et al. The open diffusion data derivatives. Sci Data 6, 69 (2019). [doi:10.1038/s41597-019-0073-y](https://doi.org/10.1038/s41597-019-0073-y)
+- Woolrich M.W. et al. Bayesian analysis of neuroimaging data in FSL. NeuroImage 45:S173-86 (2009).
+- Smith S.M. et al. Advances in functional and structural MR image analysis and implementation as FSL. NeuroImage 23(S1):208-19 (2004).
+
+<!-- brainlife-app:end -->
+
 This app will extract diffusion metrics mapped from the DTI and/or NODDI model within tissue type masks (i.e. csf, gm, wm). This app uses FSL and is intended to be used for a quick and dirty analysis of tissue type metrics.
 
 ### Authors
